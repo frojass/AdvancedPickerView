@@ -52,13 +52,14 @@ xmlns:controls="clr-namespace:ComboboxApp.Controls.AdvancedPickerView"
 | `SelectedItem` | `object` | `null` | Item actualmente seleccionado |
 | `SelectedText` | `string` | `""` | Texto mostrado en el header |
 | `SelectedItemTextPath` | `string` | `""` | Propiedad del objeto a mostrar como texto |
-| `FilterPropertyPath` | `string` | `""` | Propiedad del objeto a usar para filtrar |
+| `FilterPropertyPath` | `string` | `""` | Propiedad(es) del objeto a usar para filtrar. Soporta múltiples campos separados por coma (ej: `"Name,Code,Description"`) |
 | `FilterText` | `string` | `""` | Texto actual del filtro |
 
 ### Propiedades de Apariencia - Header
 
 | Propiedad | Tipo | Default | Descripción |
 |-----------|------|---------|-------------|
+| `HeaderHeightRequest` | `double` | `-1` | Altura del header (sin restricción por defecto) |
 | `HeaderStroke` | `Color` | `Gray` | Color del borde del header |
 | `HeaderStrokeThickness` | `double` | `1` | Grosor del borde del header |
 
@@ -262,6 +263,81 @@ public void LoadLargeDataset()
 }
 ```
 
+### Ejemplo 6: Filtrado por Múltiples Campos
+
+```xml
+<controls:AdvancedPickerView
+    x:Name="ProductPicker"
+    ItemsSource="{Binding Products}"
+    SelectedItem="{Binding SelectedProduct}"
+    SelectedItemTextPath="Name"
+    FilterPropertyPath="Name,Code,Description"
+    HeaderHeightRequest="50"
+    PlaceholderTextWhenNoSelection="Seleccione un producto"
+    FilterPlaceholder="Buscar por nombre, código o descripción..."
+    ListHeight="300">
+    <controls:AdvancedPickerView.ItemTemplate>
+        <DataTemplate>
+            <VerticalStackLayout Padding="10" Spacing="4">
+                <Label 
+                    Text="{Binding Name}"
+                    FontAttributes="Bold"
+                    FontSize="16" />
+                <Label 
+                    Text="{Binding Code}"
+                    FontSize="12"
+                    TextColor="DarkGray" />
+                <Label 
+                    Text="{Binding Description}"
+                    FontSize="12"
+                    TextColor="Gray"
+                    LineBreakMode="TailTruncation" />
+            </VerticalStackLayout>
+        </DataTemplate>
+    </controls:AdvancedPickerView.ItemTemplate>
+</controls:AdvancedPickerView>
+```
+
+```csharp
+// Modelo
+public class Product
+{
+    public string Name { get; set; }
+    public string Code { get; set; }
+    public string Description { get; set; }
+    public decimal Price { get; set; }
+}
+
+// ViewModel
+public ObservableCollection<Product> Products { get; set; } = new()
+{
+    new Product 
+    { 
+        Name = "Laptop HP", 
+        Code = "LAP-001", 
+        Description = "Laptop HP EliteBook 15 pulgadas",
+        Price = 899.99m
+    },
+    new Product 
+    { 
+        Name = "Mouse Logitech", 
+        Code = "MOU-025", 
+        Description = "Mouse inalámbrico Logitech MX Master 3",
+        Price = 99.99m
+    },
+    new Product 
+    { 
+        Name = "Teclado Mecánico", 
+        Code = "KEY-042", 
+        Description = "Teclado mecánico RGB retroiluminado",
+        Price = 129.99m
+    },
+    // ... más productos
+};
+
+public Product SelectedProduct { get; set; }
+```
+
 ## Comportamiento
 
 ### Apertura del Dropdown
@@ -271,6 +347,8 @@ public void LoadLargeDataset()
 ### Filtrado
 - El filtrado tiene un debounce de 300ms para evitar búsquedas excesivas
 - Al escribir en el Entry, se filtran los items según `FilterPropertyPath`
+- Soporta búsqueda en múltiples campos separados por coma (ej: `FilterPropertyPath="Name,Code,Description"`)
+- La búsqueda en múltiples campos usa operador OR (coincidencia en cualquier campo)
 - El filtrado es case-insensitive
 - Al limpiar el Entry (botón X), se muestran todos los items nuevamente
 

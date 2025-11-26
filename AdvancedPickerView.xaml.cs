@@ -68,6 +68,15 @@ public partial class AdvancedPickerView : ContentView
         set => SetValue(HeaderHeightProperty, value);
     }
 
+    public static readonly BindableProperty HeaderHeightRequestProperty =
+        BindableProperty.Create(nameof(HeaderHeightRequest), typeof(double), typeof(AdvancedPickerView), -1d);
+
+    public double HeaderHeightRequest
+    {
+        get => (double)GetValue(HeaderHeightRequestProperty);
+        set => SetValue(HeaderHeightRequestProperty, value);
+    }
+
     public static readonly BindableProperty HeaderStrokeThicknessProperty =
         BindableProperty.Create(nameof(HeaderStrokeThickness), typeof(double), typeof(AdvancedPickerView), 1d);
 
@@ -551,19 +560,30 @@ public partial class AdvancedPickerView : ContentView
                 {
                     if (item == null) return false;
 
-                    string text;
-
                     if (!string.IsNullOrEmpty(FilterPropertyPath))
                     {
-                        var prop = item.GetType().GetProperty(FilterPropertyPath);
-                        text = prop?.GetValue(item)?.ToString() ?? string.Empty;
+                        // Soportar múltiples campos separados por coma
+                        var propertyPaths = FilterPropertyPath.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                                               .Select(p => p.Trim())
+                                                               .ToArray();
+
+                        // Buscar en cualquiera de los campos especificados
+                        foreach (var propName in propertyPaths)
+                        {
+                            var prop = item.GetType().GetProperty(propName);
+                            var text = prop?.GetValue(item)?.ToString() ?? string.Empty;
+
+                            if (text.Contains(normalized, StringComparison.OrdinalIgnoreCase))
+                                return true;
+                        }
+
+                        return false;
                     }
                     else
                     {
-                        text = item.ToString() ?? string.Empty;
+                        var text = item.ToString() ?? string.Empty;
+                        return text.Contains(normalized, StringComparison.OrdinalIgnoreCase);
                     }
-
-                    return text.Contains(normalized, StringComparison.OrdinalIgnoreCase);
                 });
             }
 

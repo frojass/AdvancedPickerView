@@ -4,15 +4,12 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Name="Self">
-
-
-
     <VerticalStackLayout Padding="8" Spacing="6">
-
         <!--  Header estilo Picker  -->
         <Border
             x:Name="HeaderBorder"
             Padding="8"
+            HeightRequest="{Binding Source={x:Reference Self}, Path=HeaderHeightRequest}"
             Stroke="{Binding Source={x:Reference Self}, Path=HeaderStroke}"
             StrokeShape="RoundRectangle 6"
             StrokeThickness="{Binding Source={x:Reference Self}, Path=HeaderStrokeThickness}">
@@ -45,7 +42,6 @@
                 </Image>
             </Grid>
         </Border>
-
         <!--  Panel de filtro y lista  -->
         <Border
             x:Name="FilterBorder"

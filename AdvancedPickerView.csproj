@@ -8,9 +8,9 @@
 		<UseMaui>true</UseMaui>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>AdvancedPickerView.Maui</PackageId>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<Authors>Frank Rojas</Authors>
-		<Description>Control personalizado para .NET MAUI</Description>
+		<Description>Control personalizado para .NET MAUI con filtro para varios campos</Description>
 		<PackageTags>maui;ui;control</PackageTags>
 		<Company></Company>
 		
