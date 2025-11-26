@@ -4,7 +4,6 @@ using System.Threading;
 
 namespace AdvancedPickerView;
 
-
 public partial class AdvancedPickerView : ContentView
 {
     public AdvancedPickerView()
@@ -14,10 +13,17 @@ public partial class AdvancedPickerView : ContentView
         FilteredItems = new ObservableCollection<object>();
         SelectedText = PlaceholderTextWhenNoSelection;
         _filterCts = new CancellationTokenSource(); // inicialización temprana
+
+        // Inicializar cachés
+        _filterPathCache = new Dictionary<string, string[]>();
+        _propertyInfoCache = new Dictionary<(Type, string), System.Reflection.PropertyInfo>();
     }
     #region Properties
     //Properties
     private CancellationTokenSource _filterCts;
+    // Cachés para optimización de reflexión
+    private Dictionary<string, string[]> _filterPathCache = new();
+    private Dictionary<(Type, string), System.Reflection.PropertyInfo> _propertyInfoCache = new();
     private bool _suppressTextChanged = false;
 
     // Pagination fields
@@ -562,15 +568,28 @@ public partial class AdvancedPickerView : ContentView
 
                     if (!string.IsNullOrEmpty(FilterPropertyPath))
                     {
-                        // Soportar múltiples campos separados por coma
-                        var propertyPaths = FilterPropertyPath.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        // Usar caché para splits
+                        if (!_filterPathCache.TryGetValue(FilterPropertyPath, out var propertyPaths))
+                        {
+                            propertyPaths = FilterPropertyPath.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                                                .Select(p => p.Trim())
                                                                .ToArray();
+                            _filterPathCache[FilterPropertyPath] = propertyPaths;
+                        }
 
                         // Buscar en cualquiera de los campos especificados
                         foreach (var propName in propertyPaths)
                         {
-                            var prop = item.GetType().GetProperty(propName);
+                            // Usar caché para PropertyInfo
+                            var type = item.GetType();
+                            var key = (type, propName);
+
+                            if (!_propertyInfoCache.TryGetValue(key, out var prop))
+                            {
+                                prop = type.GetProperty(propName);
+                                _propertyInfoCache[key] = prop;
+                            }
+
                             var text = prop?.GetValue(item)?.ToString() ?? string.Empty;
 
                             if (text.Contains(normalized, StringComparison.OrdinalIgnoreCase))
@@ -587,19 +606,24 @@ public partial class AdvancedPickerView : ContentView
                 });
             }
 
-            // Convertir a lista para materializar la consulta
-            var resultList = filtered.ToList();
+            // OPTIMIZACIÓN: Paginación Temprana
+            // 1. Obtener solo la primera página inmediatamente
+            var firstPage = filtered.Take(PageSize).ToList();
 
-            // Guardar todos los resultados y resetear paginación
-            _allFilteredItems = resultList;
-            _currentPage = 0;
-
-            // Cargar solo la primera página
+            // 2. Actualizar UI con la primera página
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                LoadFirstPage();
+                ReplaceCollection(FilteredItems, firstPage);
                 IsLoading = false;
             });
+
+            // 3. Materializar el resto en segundo plano (o después de un breve delay) para permitir "Load More"
+            // Esperamos un poco para que el UI thread procese el renderizado de la primera página
+            await Task.Delay(50);
+
+            // Materializar la lista completa para soportar la paginación posterior
+            _allFilteredItems = filtered.ToList();
+            _currentPage = 0;
         }
         catch (Exception ex)
         {
@@ -675,3 +699,4 @@ public partial class AdvancedPickerView : ContentView
     }
     #endregion
 }
+

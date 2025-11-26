@@ -13,7 +13,7 @@
             Stroke="{Binding Source={x:Reference Self}, Path=HeaderStroke}"
             StrokeShape="RoundRectangle 6"
             StrokeThickness="{Binding Source={x:Reference Self}, Path=HeaderStrokeThickness}">
-            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+            <Grid ColumnDefinitions="*,Auto">
                 <!--  Texto seleccionado  -->
                 <Label
                     Grid.Column="0"
