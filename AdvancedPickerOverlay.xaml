@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="ComboboxApp.Controls.AdvancedPickerOverlay.AdvancedPickerOverlay"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Name="RootControl">
+    <Border
+        x:Name="HeaderBorder"
+        Padding="12,0"
+        BackgroundColor="{Binding Source={x:Reference RootControl}, Path=HeaderBackgroundColor}"
+        HeightRequest="{Binding Source={x:Reference RootControl}, Path=HeaderHeightRequest}"
+        HorizontalOptions="Fill"
+        Stroke="{Binding Source={x:Reference RootControl}, Path=HeaderStroke}"
+        StrokeThickness="{Binding Source={x:Reference RootControl}, Path=HeaderStrokeThickness}">
+
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="8" />
+        </Border.StrokeShape>
+
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnHeaderTapped" />
+        </Border.GestureRecognizers>
+
+        <Grid
+            ColumnDefinitions="*, Auto"
+            InputTransparent="True"
+            VerticalOptions="Center">
+            <Label
+                x:Name="SelectedLabel"
+                Grid.Column="0"
+                InputTransparent="True"
+                LineBreakMode="TailTruncation"
+                Text="{Binding Source={x:Reference RootControl}, Path=Placeholder}"
+                TextColor="{Binding Source={x:Reference RootControl}, Path=SelectedTextColor}"
+                VerticalOptions="Center" />
+
+            <Image
+                x:Name="ArrowIcon"
+                Grid.Column="1"
+                Margin="8,0,0,0"
+                HeightRequest="{Binding Source={x:Reference RootControl}, Path=ArrowIconHeight}"
+                InputTransparent="True"
+                Source="{Binding Source={x:Reference RootControl}, Path=ArrowIconSource}"
+                VerticalOptions="Center"
+                WidthRequest="{Binding Source={x:Reference RootControl}, Path=ArrowIconWidth}" />
+        </Grid>
+    </Border>
+</ContentView>

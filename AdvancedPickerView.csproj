@@ -8,7 +8,7 @@
 		<UseMaui>true</UseMaui>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>AdvancedPickerView.Maui</PackageId>
-		<Version>1.0.1</Version>
+		<Version>1.0.7</Version>
 		<Authors>Frank Rojas</Authors>
 		<Description>Control personalizado para .NET MAUI con filtro para varios campos</Description>
 		<PackageTags>maui;ui;control</PackageTags>
@@ -31,9 +31,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="AdvancedPickerDropdown.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="AdvancedPickerOverlay.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="AdvancedPickerView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="AdvancedPickerView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </None>
 	</ItemGroup>
 
 </Project>
