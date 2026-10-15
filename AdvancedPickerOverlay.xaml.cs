@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Reflection;
 
-namespace ComboboxApp.Controls.AdvancedPickerOverlay;
+namespace AdvancedPickerView;
 
 public partial class AdvancedPickerOverlay : ContentView
 {
@@ -38,6 +38,19 @@ public partial class AdvancedPickerOverlay : ContentView
     {
         get => (IEnumerable)GetValue(ItemsSourceProperty);
         set => SetValue(ItemsSourceProperty, value);
+    }
+
+    /// <summary>
+    /// Modo remoto: si se asigna, el dropdown pide las páginas al proveedor (búsqueda en origen)
+    /// e ignora <see cref="ItemsSource"/> y <see cref="FilterPropertyPath"/>.
+    /// </summary>
+    public static readonly BindableProperty ItemsProviderProperty =
+        BindableProperty.Create(nameof(ItemsProvider), typeof(AdvancedPickerItemsProvider), typeof(AdvancedPickerOverlay));
+
+    public AdvancedPickerItemsProvider? ItemsProvider
+    {
+        get => (AdvancedPickerItemsProvider?)GetValue(ItemsProviderProperty);
+        set => SetValue(ItemsProviderProperty, value);
     }
 
     public static readonly BindableProperty SelectedItemProperty =
@@ -358,7 +371,7 @@ public partial class AdvancedPickerOverlay : ContentView
         // Configurar dropdown
         if (_dropdown != null)
         {
-            _dropdown.Initialize(ItemsSource as IEnumerable<object>, FilterPropertyPath, ItemTemplate);
+            _dropdown.Initialize(ItemsSource as IEnumerable<object>, FilterPropertyPath, ItemTemplate, ItemsProvider, PageSize);
             _dropdown.ApplyConfiguration(ListHeight, FilterTextColor, FilterFontSize, FilterPlaceholder, ColorItemSelected, PageSize, DropdownHeaderBorderColor, DropdownHeaderCornerRadius);
             _dropdown.ItemSelected += OnDropdownItemSelected;
             _dropdown.SearchFocused += OnDropdownSearchFocused;
@@ -384,6 +397,7 @@ public partial class AdvancedPickerOverlay : ContentView
 
         // Force unfocus to hide keyboard and trigger restoration logic if needed
         _dropdown.UnfocusSearch();
+        _dropdown.CancelPendingLoads();
 
         // Restaurar visibilidad del header
         // HeaderBorder.Opacity = 1;

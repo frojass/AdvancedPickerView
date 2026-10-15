@@ -51,6 +51,26 @@ The `AdvancedPickerOverlay` is a custom control for .NET MAUI that provides a hi
 | `DropdownHeaderCornerRadius` | `CornerRadius` | `0` | Corner radius of the search box container. |
 | `PageSize` | `int` | `20` | Number of items to load per page for optimization. |
 
+### Remote data (server/database-side search)
+| Property | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `ItemsProvider` | `AdvancedPickerItemsProvider` | `null` | When set, the dropdown requests pages from this delegate (`filter, page, pageSize, ct → AdvancedPickerPage(Items, HasMore)`) instead of filtering `ItemsSource` in memory. Search is debounced (300 ms) and previous requests are cancelled. `ItemsSource` and `FilterPropertyPath` are ignored. |
+
+```csharp
+// ViewModel
+public AdvancedPickerItemsProvider CustomersProvider => async (filter, page, pageSize, ct) =>
+{
+    var result = await repository.GetPageAsync(new CustomerQuery(page, pageSize, filter), ct);
+    return new AdvancedPickerPage(result.Items.Cast<object>().ToList(), result.HasMore);
+};
+```
+
+```xml
+<controls:AdvancedPickerOverlay ItemsProvider="{Binding CustomersProvider}"
+                                SelectedItem="{Binding SelectedCustomer}"
+                                SelectedItemTextPath="Name" />
+```
+
 ## Methods
 
 | Method | Description |

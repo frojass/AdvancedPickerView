@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView
-    x:Class="ComboboxApp.Controls.AdvancedPickerOverlay.AdvancedPickerDropdown"
+    x:Class="AdvancedPickerView.AdvancedPickerDropdown"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Name="RootControl"
@@ -34,7 +34,7 @@
                 Grid.Row="0"
                 Margin="0"
                 Padding="10,5"
-                BackgroundColor="{AppThemeBinding Light=#F5F5F5,
+                BackgroundColor="{AppThemeBinding Light=White,
                                                   Dark=#2D2D2D}"
                 Stroke="{Binding DropdownHeaderBorderColor}"
                 StrokeThickness="1">

@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-		<!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
+		<!-- <TargetFrameworks>$(TargetFrameworks);net10.0-tizen</TargetFrameworks> -->
 		<UseMaui>true</UseMaui>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>AdvancedPickerView.Maui</PackageId>
-		<Version>1.0.7</Version>
+		<Version>1.0.13</Version>
 		<Authors>Frank Rojas</Authors>
 		<Description>Control personalizado para .NET MAUI con filtro para varios campos</Description>
 		<PackageTags>maui;ui;control</PackageTags>
@@ -27,17 +27,24 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+	  <None Remove="AdvancedPickerView.rar" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="AdvancedPickerDropdown.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.100" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="AdvancedPickerOverlay.xaml.cs">
+	    <DependentUpon>AdvancedPickerOverlay.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="AdvancedPickerOverlay.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="AdvancedPickerView.xaml">
+	  <MauiXaml Update="AdvancedPickerOverlay.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
